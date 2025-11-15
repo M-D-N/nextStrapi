@@ -1,0 +1,48 @@
+
+.post-card {
+    max-width: 300px;
+    width: 100%;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #eee;
+    background: #fff;
+    margin-bottom: 20px;
+    transition: 0.25s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.post-title {
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.post-title a {
+  color: #1d1d1d;
+  text-decoration: none;
+}
+
+.post-title a:hover {
+  color: #0070f3;
+}
+
+.post-desc {
+  margin: 0 0 18px 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+.post-readmore {
+  font-weight: 500;
+  text-decoration: none;
+  color: #0070f3;
+}
+
+.post-readmore:hover {
+  text-decoration: underline;
+}

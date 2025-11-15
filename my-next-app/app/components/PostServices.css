@@ -1,0 +1,24 @@
+.services__card{
+    max-width: 300px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    background: #fff;
+    color: black;
+}
+.services__card-title{
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.services__card-txt{
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+.services__card-price{
+    font-weight: 500;
+    color: #0070f3;
+}

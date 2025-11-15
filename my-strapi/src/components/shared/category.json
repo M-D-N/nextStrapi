@@ -1,0 +1,10 @@
+{
+  "collectionName": "components_shared_categories",
+  "info": {
+    "displayName": "Category",
+    "icon": "dashboard"
+  },
+  "options": {},
+  "attributes": {},
+  "config": {}
+}
