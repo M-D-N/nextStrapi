@@ -1,0 +1,16 @@
+# Node modules
+my-next-app/node_modules
+my-strapi/node_modules
+
+# Build output
+my-next-app/.next
+my-strapi/.cache
+my-strapi/build
+my-strapi/dist
+
+# Env files
+my-next-app/.env
+my-strapi/.env
+
+# Logs
+*.log
