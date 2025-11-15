@@ -2,6 +2,10 @@ export type StrapiRichTextBlock = {
   type: string;
   children: { type: string; text: string }[];
 };
+export type ArticleSeo = {
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+};
 
 export type StrapiArticle = {
   id: number;
@@ -12,6 +16,7 @@ export type StrapiArticle = {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  seo?: ArticleSeo | null;
 };
 
 export type StrapiService = {
@@ -25,17 +30,17 @@ export type StrapiService = {
   publishedAt: string;
 };
 
-const STRAPI_URL = process.env.STRAPI_URL ?? 'http://localhost:1337';
+const STRAPI_URL = process.env.STRAPI_URL ?? "http://localhost:1337";
 
 async function strapiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${STRAPI_URL}${path}`, {
-    cache: 'no-store',
+    cache: "no-store",
     ...init,
   });
 
   if (!res.ok) {
-    console.error(`Strapi error: ${res.status} ${res.statusText}`);
-    throw new Error('Failed to fetch from Strapi');
+    console.error(`Strapi error: ${res.status} ${res.statusText} for ${path}`);
+    throw new Error("Failed to fetch from Strapi");
   }
 
   const json = await res.json();
@@ -43,25 +48,25 @@ async function strapiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function getArticles(): Promise<StrapiArticle[]> {
-  return strapiFetch<StrapiArticle[]>('/api/articles');
-}
-
-export async function getServices(): Promise<StrapiService[]> {
-  return strapiFetch<StrapiService[]>('/api/services');
+  return strapiFetch<StrapiArticle[]>("/api/articles?populate=*");
 }
 
 export async function getArticleBySlug(
   slug: string
 ): Promise<StrapiArticle | null> {
   const data = await strapiFetch<StrapiArticle[]>(
-    `/api/articles?filters[slug][$eq]=${encodeURIComponent(slug)}`
+    `/api/articles?filters[slug][$eq]=${encodeURIComponent(
+      slug
+    )}&populate=*`
   );
 
-  // Strapi всегда возвращает массив в "data"
-  if (!data || data.length === 0) {
-    return null;
-  }
-
+  if (!data || data.length === 0) return null;
   return data[0];
+}
+
+
+
+export async function getServices(): Promise<StrapiService[]> {
+  return strapiFetch<StrapiService[]>('/api/services');
 }
 

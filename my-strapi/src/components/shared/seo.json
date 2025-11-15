@@ -5,6 +5,13 @@
     "icon": "chartCircle"
   },
   "options": {},
-  "attributes": {},
+  "attributes": {
+    "metaTitle": {
+      "type": "string"
+    },
+    "metaDescription": {
+      "type": "text"
+    }
+  },
   "config": {}
 }
