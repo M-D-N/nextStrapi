@@ -1,12 +1,48 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getArticleBySlug, StrapiRichTextBlock } from "@/lib/strapi";
+import Image from "next/image";
+import {
+  getArticleBySlug,
+  STRAPI_URL,
+  StrapiRichTextBlock,
+} from "@/lib/strapi";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 // —— helpers ——
+
+// универсальный хелпер для извлечения URL/размера обложки
+function getCoverImage(cover: any): { url: string; width: number; height: number } | null {
+  if (!cover) return null;
+
+  // Вариант 1: плоский объект (Strapi v5)
+  if (typeof cover.url === "string") {
+    const fmt = cover.formats?.medium || cover.formats?.small || cover;
+    return {
+      url: fmt.url,
+      width: fmt.width ?? cover.width ?? 1200,
+      height: fmt.height ?? cover.height ?? 600,
+    };
+  }
+
+  // Вариант 2: cover.data.attributes.* (классический Strapi вид)
+  const data = cover.data;
+  if (data) {
+    const attrs = data.attributes ?? data;
+    if (typeof attrs.url === "string") {
+      const fmt = attrs.formats?.medium || attrs.formats?.small || attrs;
+      return {
+        url: fmt.url,
+        width: fmt.width ?? attrs.width ?? 1200,
+        height: fmt.height ?? attrs.height ?? 600,
+      };
+    }
+  }
+
+  return null;
+}
 
 // вытаскиваем весь текст из rich-text блоков Strapi
 function extractPlainText(blocks?: StrapiRichTextBlock[]): string {
@@ -68,8 +104,17 @@ export async function generateMetadata(
   const contentFallback =
     fullText.length > 150 ? fullText.slice(0, 150).trim() + "..." : fullText;
 
-  const metaTitle = article.SEO?.metaTitle || article.title;
-  const metaDescription = article.SEO?.metaDescription || contentFallback || "Статья в блоге";
+  const metaTitle =
+    // поддерживаем оба варианта поля: SEO и seo
+    (article as any).SEO?.metaTitle ||
+    (article as any).seo?.metaTitle ||
+    article.title;
+
+  const metaDescription =
+    (article as any).SEO?.metaDescription ||
+    (article as any).seo?.metaDescription ||
+    contentFallback ||
+    "Статья в блоге";
 
   return {
     title: metaTitle,
@@ -92,14 +137,34 @@ export default async function ArticlePage({ params }: PageProps) {
     notFound();
   }
 
+  const coverImage = getCoverImage((article as any).cover);
+
   return (
     <main style={{ padding: 40, maxWidth: 800, margin: "0 auto" }}>
+      {coverImage && (
+        <div
+          style={{
+            marginBottom: 24,
+            borderRadius: 16,
+            overflow: "hidden",
+          }}
+        >
+          <Image
+            src={STRAPI_URL + coverImage.url}
+            alt={(article as any).cover?.alternativeText || article.title}
+            width={coverImage.width}
+            height={coverImage.height}
+            style={{ width: "100%", height: "auto", display: "block" }}
+          />
+        </div>
+      )}
+
       <h1 style={{ marginBottom: 12, fontSize: 32, fontWeight: 700 }}>
         {article.title}
       </h1>
 
       <p style={{ color: "#666", marginBottom: 24, fontSize: 14 }}>
-        Опубликовано: {formatDate(article.publishedAt)}
+        Опубликовано: {formatDate((article as any).publishedAt)}
       </p>
 
       <article>{renderRichText(article.content)}</article>
@@ -118,3 +183,4 @@ export default async function ArticlePage({ params }: PageProps) {
     </main>
   );
 }
+

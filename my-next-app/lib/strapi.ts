@@ -17,6 +17,7 @@ export type StrapiArticle = {
   updatedAt: string;
   publishedAt: string;
   seo?: ArticleSeo | null;
+  cover?: StrapiMedia | null; // ← вот это добавили
 };
 
 export type StrapiService = {
@@ -30,7 +31,28 @@ export type StrapiService = {
   publishedAt: string;
 };
 
-const STRAPI_URL = process.env.STRAPI_URL ?? "http://localhost:1337";
+export type StrapiMediaFormat = {
+  url: string;
+  width: number;
+  height: number;
+};
+
+export type StrapiMedia = {
+  url: string;
+  width: number;
+  height: number;
+  alternativeText?: string | null;
+  formats?: {
+    thumbnail?: StrapiMediaFormat;
+    small?: StrapiMediaFormat;
+    medium?: StrapiMediaFormat;
+    large?: StrapiMediaFormat;
+  };
+};
+
+
+export const STRAPI_URL =
+  process.env.STRAPI_URL ?? "http://localhost:1337";
 
 async function strapiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${STRAPI_URL}${path}`, {
